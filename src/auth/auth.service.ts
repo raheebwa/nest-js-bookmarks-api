@@ -24,6 +24,7 @@ export class AuthService {
             throw new ForbiddenException("Invalid credentials");
         }
 
+        delete user.hash;
         return user;
     }
     async signup(dto: AuthDto) {
@@ -37,6 +38,8 @@ export class AuthService {
                     hash,
                 },
             });
+
+            delete user.hash;
             return user;
         }
         catch (err) {
