@@ -1,0 +1,12 @@
+version: '3.8'
+# Postgresql container
+services:
+  dev-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: nest
+    ports:
+      - "5434:5432"
+        
