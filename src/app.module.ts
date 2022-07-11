@@ -4,14 +4,14 @@ import { UserModule } from './user/user.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
-import { UsersController } from './users/users.controller';
+import { UserController } from './user/user.controller';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true, 
   }),
      AuthModule, UserModule, BookmarkModule, PrismaModule],
-  controllers: [UsersController],
+  controllers: [UserController],
   providers: [],
 })
 export class AppModule {}
