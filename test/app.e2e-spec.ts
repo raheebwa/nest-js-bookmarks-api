@@ -2,6 +2,8 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
+import * as pactum from 'pactum';
+import { AuthDto } from 'src/auth/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -20,14 +22,80 @@ describe('App e2e', () => {
     );
 
     await app.init();
+    await app.listen(2345);
+    pactum.request.setBaseUrl('http://localhost:2345');
 
     prisma = app.get(PrismaService);
     await prisma.cleanDb();
   });
 
-  it.todo('should display welcome message');
-
   afterAll(async () => {
     await app.close();
+  });
+
+  describe('Auth', () => {
+    const dto: AuthDto = {
+      email: 'ramatest@test.com',
+      password: 'test',
+    };
+
+    describe('Signup', () => {
+      it('throws an error if email is not provided', async () => {
+        return pactum.spec().post('/auth/signup').expectStatus(400);
+      });
+
+      it('throws an error if password is not provided', async () => {
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withBody({
+            email: 'test@test.com',
+          })
+          .expectStatus(400);
+      });
+
+      it('should signup a new user', async () => {
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withBody(dto)
+          .expectStatus(201);
+      });
+    });
+    describe('Login', () => {
+      it('should login a user', async () => {
+        return pactum
+          .spec()
+          .post('/auth/login')
+          .withBody(dto)
+          .expectStatus(200)
+          .stores('token', 'access_token');
+      });
+    });
+  });
+
+  describe('User', () => {
+    describe('GetMe', () => {
+      it('should get me', async () => {
+        return pactum.spec().get('/users/me').expectStatus(200).withHeaders({
+          Authorization: 'Bearer $S{token}',
+        });
+      });
+    });
+    describe('UpdateMe', () => {
+      it.todo('should update me');
+    });
+  });
+
+  describe('Bookmark', () => {
+    describe('Create', () => {
+      it.todo('should create a bookmark');
+    });
+    describe('List', () => {
+      it.todo('should list bookmarks');
+    });
+    describe('Delete', () => {
+      it.todo('should delete a bookmark');
+    });
   });
 });
