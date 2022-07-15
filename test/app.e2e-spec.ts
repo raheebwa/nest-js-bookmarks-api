@@ -5,6 +5,7 @@ import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum';
 import { AuthDto } from 'src/auth/dto';
 import { EditUserDto } from 'src/user/dto';
+import { CreateBookmarkDto, EditBookmarkDto } from 'src/bookmark/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -107,14 +108,85 @@ describe('App e2e', () => {
   });
 
   describe('Bookmark', () => {
-    describe('Create', () => {
-      it.todo('should create a bookmark');
+    describe('Create Bookmark', () => {
+      const dto: CreateBookmarkDto = {
+        title: 'Test Bookmark',
+        link: 'https://test.com',
+        description: 'Test Bookmark Description',
+      };
+      it('should create bookmark', async () => {
+        return pactum
+          .spec()
+          .post('/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{token}',
+          })
+          .withBody(dto)
+          .expectStatus(201)
+          .expectBodyContains(dto.title)
+          .expectBodyContains(dto.link)
+          .stores('bookmarkId', 'id');
+      });
     });
-    describe('List', () => {
-      it.todo('should list bookmarks');
+
+    describe('Get Bookmarks', () => {
+      it('should get bookmarks', async () => {
+        return pactum
+          .spec()
+          .get('/bookmarks')
+          .withHeaders({
+            Authorization: 'Bearer $S{token}',
+          })
+          .expectStatus(200)
+          .expectBodyContains('Test Bookmark');
+      });
     });
-    describe('Delete', () => {
-      it.todo('should delete a bookmark');
+
+    describe('Get Bookmark by ID', () => {
+      it('should get bookmark by id', async () => {
+        return pactum
+          .spec()
+          .get('/bookmarks/$S{bookmarkId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{token}',
+          })
+          .expectStatus(200)
+          .expectBodyContains('Test Bookmark');
+      });
+    });
+
+    describe('Edit Bookmark', () => {
+      const dto: EditBookmarkDto = {
+        title: 'Test',
+        link: 'https://test.com',
+        description: 'Test',
+      };
+
+      it('should update bookmark', async () => {
+        return pactum
+          .spec()
+          .patch('/bookmarks/$S{bookmarkId}')
+          .withBody(dto)
+          .withHeaders({
+            Authorization: 'Bearer $S{token}',
+          })
+          .expectStatus(200)
+          .expectBodyContains(dto.title)
+          .expectBodyContains(dto.link)
+          .expectBodyContains(dto.description);
+      });
+    });
+
+    describe('Delete Bookmark', () => {
+      it('should delete bookmark', async () => {
+        return pactum
+          .spec()
+          .delete('/bookmarks/$S{bookmarkId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{token}',
+          })
+          .expectStatus(204);
+      });
     });
   });
 });
