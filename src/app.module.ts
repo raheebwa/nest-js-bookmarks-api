@@ -4,7 +4,6 @@ import { UserModule } from './user/user.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
-import { UserController } from './user/user.controller';
 
 @Module({
   imports: [
@@ -16,7 +15,7 @@ import { UserController } from './user/user.controller';
     BookmarkModule,
     PrismaModule,
   ],
-  controllers: [UserController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}
